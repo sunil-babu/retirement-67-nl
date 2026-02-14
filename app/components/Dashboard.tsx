@@ -334,13 +334,11 @@ export default function Dashboard() {
             💡 Your Personalized Strategy
           </h2>
           <p className="text-slate-300 leading-relaxed mb-8 text-lg">
-            To achieve early retirement at age {retirementAge}, you should aim to save aggressively (<strong>€{data.monthlySavings}/mo</strong>). 
-            Utilize the <strong>30% Jaarruimte</strong> deduction to reduce Box 1 tax, 
-            and keep taxable Box 3 wealth optimized using the <strong>€59,357</strong> exemption.
+            {data.personalizedStrategy || `To achieve early retirement at age ${retirementAge}, you should aim to save aggressively (€${data.monthlySavings}/mo). Utilize the 30% Jaarruimte deduction to reduce Box 1 tax, and keep taxable Box 3 wealth optimized using the €59,357 exemption.`}
           </p>
           <div className="bg-slate-800 p-6 rounded-xl border border-slate-700">
-            <span className="font-bold text-slate-200">Feasibility: </span>
-            <span className="text-slate-400">With consistent saving and Box 3 optimization, reaching the €{data.targetNestEgg.toLocaleString()} target is feasible.</span>
+            <span className="font-bold text-slate-200">Allocation Rationale: </span>
+            <span className="text-slate-400">{data.allocationRationale || 'With consistent saving and Box 3 optimization, reaching your target is feasible.'}</span>
           </div>
         </div>
       </div>
@@ -406,15 +404,19 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <div className="font-semibold text-slate-900 mb-2">Box 3 Strategy</div>
-                <p className="text-sm text-slate-700">Invest in products that maximize returns while staying below the Box 3 threshold for optimal tax efficiency.</p>
+                <p className="text-sm text-slate-700">
+                  {data.taxOptimization?.box3Strategy || 'Invest in products that maximize returns while staying below the Box 3 threshold for optimal tax efficiency.'}
+                </p>
               </div>
               <div>
                 <div className="font-semibold text-slate-900 mb-2">Pension Recommendations</div>
-                <p className="text-sm text-slate-700">Contribute to a private pension (lijfrente) to get tax deductions, which can be used for early retirement income.</p>
+                <p className="text-sm text-slate-700">
+                  {data.taxOptimization?.pensionRecommendation || 'Contribute to a private pension (lijfrente) to get tax deductions, which can be used for early retirement income.'}
+                </p>
               </div>
             </div>
             <div className="bg-white rounded-lg p-4 inline-block mt-6">
-              <span className="font-bold text-emerald-600">Estimated Annual Tax Savings: €{Math.round(data.estimatedBox3Tax).toLocaleString()}</span>
+              <span className="font-bold text-emerald-600">Estimated Annual Box 3 Tax: €{Math.round(data.estimatedBox3Tax).toLocaleString()}</span>
             </div>
           </div>
         </div>
@@ -424,26 +426,39 @@ export default function Dashboard() {
       <div className="space-y-6">
         <h3 className="text-2xl font-bold text-slate-900">📊 Recommended Dutch Products</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <ProductCard
-            title="iShares AEX ETF"
-            category="ETF"
-            desc="Low fees and strong historical returns based on the Dutch stock market."
-          />
-          <ProductCard
-            title="ABN AMRO Lijfrente"
-            category="Lijfrente"
-            desc="Offers tax benefits, helping you defer income taxes while saving for retirement."
-          />
-          <ProductCard
-            title="Funds managed by Triodos"
-            category="Sustainable Investment Fund"
-            desc="Align investments with ethical values while aiming for decent returns."
-          />
-          <ProductCard
-            title="DeGiro's Access account"
-            category="Investment brokerage"
-            desc="Low fees and a wide range of investment options including Dutch ETFs."
-          />
+          {data.dutchProducts && data.dutchProducts.length > 0 ? (
+            data.dutchProducts.map((product: any, idx: number) => (
+              <ProductCard
+                key={idx}
+                title={product.title}
+                category={product.category}
+                desc={product.description}
+              />
+            ))
+          ) : (
+            <>
+              <ProductCard
+                title="VWRL (Vanguard FTSE All-World)"
+                category="ETF"
+                desc="Low-cost global diversification, available on DeGiro with minimal fees."
+              />
+              <ProductCard
+                title="Brand New Day Lijfrente"
+                category="Lijfrente"
+                desc="Tax-efficient pension product with low fees and Box 1 deductions."
+              />
+              <ProductCard
+                title="Triodos Sustainable Funds"
+                category="Sustainable Investment Fund"
+                desc="Align investments with ethical values while aiming for decent returns."
+              />
+              <ProductCard
+                title="DeGiro Basic Account"
+                category="Investment Brokerage"
+                desc="Low fees and a wide range of investment options including Dutch ETFs."
+              />
+            </>
+          )}
         </div>
       </div>
 
@@ -451,31 +466,44 @@ export default function Dashboard() {
       <div className="space-y-8">
         <h3 className="text-2xl font-bold text-slate-900">🎯 Your Wealth Journey</h3>
         <div className="space-y-6">
-          <TimelineItem
-            year={new Date().getFullYear()}
-            wealth={data.monthlySavings * 12}
-            milestone={`Increase savings rate to €${Math.round(data.monthlySavings)}/month.`}
-          />
-          <TimelineItem
-            year={new Date().getFullYear() + 4}
-            wealth={Math.round(data.monthlySavings * 12 * 4)}
-            milestone="Maximize investments in AEX index fund."
-          />
-          <TimelineItem
-            year={new Date().getFullYear() + 8}
-            wealth={Math.round(data.monthlySavings * 12 * 8)}
-            milestone="Review portfolio; consider reallocating excess cash into higher yield investments."
-          />
-          <TimelineItem
-            year={new Date().getFullYear() + 12}
-            wealth={Math.round(data.monthlySavings * 12 * 12)}
-            milestone="Open lijfrente account to further tax-shelter your investments."
-          />
-          <TimelineItem
-            year={new Date().getFullYear() + (retirementAge - currentAge)}
-            wealth={data.targetNestEgg}
-            milestone="Start creating an 'income in retirement' plan with your investments."
-          />
+          {data.wealthJourney && data.wealthJourney.length > 0 ? (
+            data.wealthJourney.map((milestone: any, idx: number) => (
+              <TimelineItem
+                key={idx}
+                year={milestone.year}
+                wealth={milestone.projectedWealth}
+                milestone={milestone.milestone}
+              />
+            ))
+          ) : (
+            <>
+              <TimelineItem
+                year={new Date().getFullYear()}
+                wealth={data.monthlySavings * 12}
+                milestone={`Increase savings rate to €${Math.round(data.monthlySavings)}/month.`}
+              />
+              <TimelineItem
+                year={new Date().getFullYear() + 4}
+                wealth={Math.round(data.monthlySavings * 12 * 4)}
+                milestone="Maximize investments in global index funds."
+              />
+              <TimelineItem
+                year={new Date().getFullYear() + 8}
+                wealth={Math.round(data.monthlySavings * 12 * 8)}
+                milestone="Review portfolio; consider reallocating excess cash into higher yield investments."
+              />
+              <TimelineItem
+                year={new Date().getFullYear() + 12}
+                wealth={Math.round(data.monthlySavings * 12 * 12)}
+                milestone="Open lijfrente account to further tax-shelter your investments."
+              />
+              <TimelineItem
+                year={new Date().getFullYear() + (retirementAge - currentAge)}
+                wealth={data.targetNestEgg}
+                milestone="Start creating an 'income in retirement' plan with your investments."
+              />
+            </>
+          )}
         </div>
       </div>
 
