@@ -63,7 +63,7 @@ export async function POST(request: Request) {
     });
 
     const model = vertexAI.getGenerativeModel({
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-2.5-flash-preview',
       systemInstruction: 'You are a Dutch FIRE (Financial Independence, Retire Early) expert who specializes in Netherlands tax law, pension systems (pillar 1, 2, 3), Box 3 wealth taxation, and investment strategies for Dutch residents.'
     });
 
