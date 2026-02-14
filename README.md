@@ -88,6 +88,36 @@ docker run -p 3000:3000 retire-right-nl:latest
 
 # Access at http://localhost:3000
 ```
+## 🚀 Deployment to Google Cloud Run
+
+This project includes a `Dockerfile` and is optimized for deployment on Google Cloud Run.
+
+### Prerequisites
+* [Google Cloud CLI](https://cloud.google.com/sdk/docs/install) installed.
+* A Google Cloud Project created.
+
+### Deployment Commands
+
+Run these commands from the root of the project:
+
+```bash
+# 1. Login to your Google Cloud account
+gcloud auth login
+
+# 2. Set your Project ID (replace [YOUR_PROJECT_ID] with your actual ID)
+gcloud config set project [YOUR_PROJECT_ID]
+
+# 3. Enable required services (only needed once per project)
+gcloud services enable run.googleapis.com cloudbuild.googleapis.com
+
+# 4. Build and Deploy
+# This zips the code, builds the container in the cloud, and deploys it to the Netherlands region (europe-west4).
+gcloud run deploy retire-right-nl \
+  --source . \
+  --region europe-west4 \
+  --allow-unauthenticated
+```
+
 
 ## 🚀 Usage
 
