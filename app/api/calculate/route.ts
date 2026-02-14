@@ -8,14 +8,8 @@ const ASSUMED_INVESTMENT_RETURN = 0.06;
 const TAX_FREE_ALLOWANCE = 59357; 
 
 // Initialize Vertex AI
-// Cloud Run automatically provides GCLOUD_PROJECT and GCP_PROJECT environment variables
-// No manual configuration needed when deployed to Cloud Run!
-const projectId = process.env.GCLOUD_PROJECT || process.env.GCP_PROJECT || process.env.GOOGLE_CLOUD_PROJECT;
-const location = 'europe-west4'; // Netherlands region for Vertex AI
-
-if (!projectId) {
-  console.warn('Warning: No project ID detected. Vertex AI may not work.');
-}
+const projectId = process.env.GOOGLE_CLOUD_PROJECT || 'your-project-id';
+const location = process.env.GOOGLE_CLOUD_LOCATION || 'europe-west4';
 
 export async function POST(request: Request) {
   const body = await request.json();
