@@ -30,6 +30,9 @@ export default function Dashboard() {
     try {
       const response = await fetch('/api/calculate', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           currentAge,
           retirementAge,
@@ -37,10 +40,17 @@ export default function Dashboard() {
           monthlyExpenses
         })
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
       setData(data);
     } catch (error) {
       console.error('Error fetching strategy:', error);
+      alert('Failed to calculate strategy. Please try again.');
+      setHasSubmitted(false);
     } finally {
       setLoading(false);
     }

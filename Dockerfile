@@ -20,17 +20,23 @@ FROM node:18-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=8080
+ENV HOSTNAME="0.0.0.0"
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-COPY --from=builder /app/public ./public
+# Copy the standalone build
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+
+# Copy static files - these need to be in the right location
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Create public directory (Next.js may need it even if empty)
+RUN mkdir -p ./public && chown nextjs:nodejs ./public
 
 USER nextjs
 
 EXPOSE 8080
-ENV PORT=8080
 
 CMD ["node", "server.js"]
